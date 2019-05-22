@@ -1,5 +1,28 @@
+# vscode-dts
 
-# Contributing
+CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts
+
+## Usage
+
+```bash
+ ~ > npx vscode-dts
+vscode-dts: CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts
+
+Usage:
+  - npx vscode-dts dev            Download vscode.proposed.d.ts
+  - npx vscode-dts <git-tag>      Download vscode.d.ts from git tag of microsoft/vscode
+  - npx vscode-dts <git-branch>   Download vscode.d.ts from git branch of microsoft/vscode
+  - npx vscode-dts                Print Help
+  - npx vscode-dts -h             Print Help
+  - npx vscode-dts --help         Print Help
+ ~ >
+```
+
+## License
+
+[MIT](LICENSE)
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
