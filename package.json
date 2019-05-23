@@ -1,6 +1,6 @@
 {
   "name": "vscode-dts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts",
   "bin": "index.js",
   "author": {
