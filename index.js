@@ -41,15 +41,16 @@ function printHelp() {
 
 function download(url, outPath) {
   return new Promise((resolve, reject) => {
-    const outStream = fs.createWriteStream(outPath)
-    outStream.on('close', () => {
-      resolve()
-    })
-
     https.get(url, res => {
       if (res.statusCode !== 200) {
         reject(`Failed to get ${url}`)
+        return
       }
+
+      const outStream = fs.createWriteStream(outPath)
+      outStream.on('close', () => {
+        resolve()
+      })
 
       res.pipe(outStream)
     })
