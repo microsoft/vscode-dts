@@ -4,6 +4,7 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
+const prompts = require('prompts')
 
 const PROPOSED_DTS_URL = 'https://raw.githubusercontent.com/microsoft/vscode/master/src/vs/vscode.proposed.d.ts'
 
@@ -22,7 +23,9 @@ if (realArgs.length === 0 || realArgs[0] === '-h' || realArgs[0] === '--help') {
   const url = `https://raw.githubusercontent.com/microsoft/vscode/${realArgs[0]}/src/vs/vscode.d.ts`
   const outPath = path.resolve(process.cwd(), './vscode.d.ts')
   console.log(`Downloading vscode.d.ts to ${outPath} from ${url}`)
-  download(url, outPath)
+  download(url, outPath).then(() => {
+    removeNodeModulesTypes()
+  })
 }
 
 function printHelp() {
@@ -55,4 +58,30 @@ function download(url, outPath) {
       res.pipe(outStream)
     })
   })
+}
+
+function removeNodeModulesTypes() {
+  if (fs.existsSync('node_modules/vscode/vscode.d.ts')) {
+    prompts({
+      type: 'confirm',
+      name: 'value',
+      message: 'Remove conflicting vscode typing at node_modules/vscode/vscode.d.ts?'
+    }).then(res => {
+      if(res.value) {
+        fs.unlinkSync('node_modules/vscode/vscode.d.ts')
+        console.log('Removed node_modules/vscode/vscode.d.ts')
+      }
+    })
+  } else if (fs.existsSync('node_modules/@types/vscode/index.d.ts')) {
+    prompts({
+      type: 'confirm',
+      name: 'value',
+      message: 'Remove conflicting vscode typing at node_modules/@types/vscode/index.d.ts?'
+    }).then(res => {
+      if(res.value) {
+        fs.unlinkSync('node_modules/@types/vscode/index.d.ts')
+        console.log('Removed node_modules/@types/vscode/index.d.ts')
+      }
+    })
+  }
 }
