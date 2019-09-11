@@ -7,14 +7,21 @@
 	},
 	"bin": "index.js",
 	"scripts": {
+		"compile": "tsc -p .",
+		"watch": "tsc -w -p .",
 		"prepublishOnly": "tsc index.ts"
 	},
 	"license": "MIT",
 	"dependencies": {
-		"prompts": "^2.1.0"
+		"minimist": "^1.2.0",
+		"prompts": "^2.1.0",
+		"rimraf": "^3.0.0"
 	},
 	"devDependencies": {
+		"@types/minimist": "^1.2.0",
 		"@types/node": "^12.0.2",
+		"@types/prompts": "^2.0.1",
+		"@types/rimraf": "^2.0.2",
 		"typescript": "^3.6.2"
 	}
 }
