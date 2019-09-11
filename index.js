@@ -26,7 +26,7 @@ function handleDev(gitTagOrBranch) {
         ? "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.proposed.d.ts"
         : 'https://raw.githubusercontent.com/microsoft/vscode/master/src/vs/vscode.proposed.d.ts';
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.proposed.d.ts');
-    console.log("Downloading vscode.proposed.d.ts to " + outPath);
+    console.log("Downloading vscode.proposed.d.ts\nTo:   " + outPath + "\nFrom: " + url);
     download(url, outPath).then(function () {
         console.log("Please set " + toRedString("\"enableProposedApi\": true") + " in package.json.");
         console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api');
@@ -35,7 +35,7 @@ function handleDev(gitTagOrBranch) {
 function handleDefaultDownload(gitTagOrBranch, force) {
     var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.d.ts";
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.d.ts');
-    console.log("Downloading vscode.d.ts to " + outPath + " from " + url);
+    console.log("Downloading vscode.d.ts\nTo:   " + outPath + "\nFrom: " + url);
     download(url, outPath).then(function () {
         if (force) {
             forceRemoveNodeModulesTypes();

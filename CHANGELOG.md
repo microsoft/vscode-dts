@@ -1,3 +1,7 @@
+### 0.3.1 | 2019-09-11
+
+- Improve help message.
+
 ### 0.3.0 | 2019-09-11
 
 - Add `-f` flag to `npx vscode-dts master -f` for forced removal of conflicting types.

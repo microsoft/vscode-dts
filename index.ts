@@ -23,7 +23,7 @@ function handleDev(gitTagOrBranch?: string) {
     ? `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.proposed.d.ts`
     : 'https://raw.githubusercontent.com/microsoft/vscode/master/src/vs/vscode.proposed.d.ts'
   const outPath = path.resolve(process.cwd(), './vscode.proposed.d.ts')
-  console.log(`Downloading vscode.proposed.d.ts to ${outPath}`)
+  console.log(`Downloading vscode.proposed.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
   download(url, outPath).then(() => {
     console.log(`Please set ${toRedString(`"enableProposedApi": true`)} in package.json.`)
@@ -34,7 +34,7 @@ function handleDev(gitTagOrBranch?: string) {
 function handleDefaultDownload(gitTagOrBranch: string, force?: boolean) {
   const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.d.ts`
   const outPath = path.resolve(process.cwd(), './vscode.d.ts')
-  console.log(`Downloading vscode.d.ts to ${outPath} from ${url}`)
+  console.log(`Downloading vscode.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
   download(url, outPath).then(() => {
     if (force) {
