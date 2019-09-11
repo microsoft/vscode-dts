@@ -9,7 +9,7 @@
 	"scripts": {
 		"compile": "tsc -p .",
 		"watch": "tsc -w -p .",
-		"prepublishOnly": "tsc index.ts"
+		"prepublishOnly": "tsc -p ."
 	},
 	"license": "MIT",
 	"dependencies": {
