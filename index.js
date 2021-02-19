@@ -24,7 +24,7 @@ else if (argv._[0]) {
 function handleDev(gitTagOrBranch) {
     var url = gitTagOrBranch
         ? "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.proposed.d.ts"
-        : 'https://raw.githubusercontent.com/microsoft/vscode/master/src/vs/vscode.proposed.d.ts';
+        : 'https://raw.githubusercontent.com/microsoft/vscode/main/src/vs/vscode.proposed.d.ts';
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.proposed.d.ts');
     console.log("Downloading vscode.proposed.d.ts\nTo:   " + outPath + "\nFrom: " + url);
     download(url, outPath).then(function () {
@@ -33,6 +33,10 @@ function handleDev(gitTagOrBranch) {
     });
 }
 function handleDefaultDownload(gitTagOrBranch, force) {
+    // handle master->main rename for old consumers
+    if (gitTagOrBranch === 'master') {
+        gitTagOrBranch = 'main';
+    }
     var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.d.ts";
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.d.ts');
     console.log("Downloading vscode.d.ts\nTo:   " + outPath + "\nFrom: " + url);

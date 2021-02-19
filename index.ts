@@ -21,7 +21,7 @@ if (argv._.length === 0 || argv['h'] || argv['help']) {
 function handleDev(gitTagOrBranch?: string) {
   const url = gitTagOrBranch
     ? `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.proposed.d.ts`
-    : 'https://raw.githubusercontent.com/microsoft/vscode/master/src/vs/vscode.proposed.d.ts'
+    : 'https://raw.githubusercontent.com/microsoft/vscode/main/src/vs/vscode.proposed.d.ts'
   const outPath = path.resolve(process.cwd(), './vscode.proposed.d.ts')
   console.log(`Downloading vscode.proposed.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
@@ -32,6 +32,11 @@ function handleDev(gitTagOrBranch?: string) {
 }
 
 function handleDefaultDownload(gitTagOrBranch: string, force?: boolean) {
+  // handle master->main rename for old consumers
+  if (gitTagOrBranch === 'master') {
+    gitTagOrBranch = 'main';
+  }
+
   const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.d.ts`
   const outPath = path.resolve(process.cwd(), './vscode.d.ts')
   console.log(`Downloading vscode.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
