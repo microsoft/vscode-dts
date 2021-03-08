@@ -12,7 +12,7 @@ Usage:
   - npx vscode-dts dev                          Download vscode.proposed.d.ts
   - npx vscode-dts dev <git-tag | git-branch>   Download vscode.proposed.d.ts from git tag/branch of microsoft/vscode
   - npx vscode-dts <git-tag | git-branch>       Download vscode.d.ts from git tag/branch of microsoft/vscode
-  - npx vscode-dts <git-tag | git-branch> -f    Download vscode.d.ts and remove comflicing types in node_modules/@types/vscode
+  - npx vscode-dts <git-tag | git-branch> -f    Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode
   - npx vscode-dts                              Print Help
   - npx vscode-dts -h                           Print Help
   - npx vscode-dts --help                       Print Help
