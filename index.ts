@@ -26,15 +26,27 @@ function handleDev(gitTagOrBranch?: string) {
   console.log(`Downloading vscode.proposed.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
   download(url, outPath).then(() => {
-    console.log(`Please set ${toRedString(`"enableProposedApi": true`)} in package.json.`)
+    if (!isProposedApiEnabled()) {
+      console.log(`Please set ${toRedString(`"enableProposedApi": true`)} in package.json.`)
+    }
     console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api')
   })
+}
+
+function isProposedApiEnabled() {
+  try {
+    const packageJsonPath = path.resolve(process.cwd(), './package.json')
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+    return !!packageJson.enableProposedApi
+  } catch {
+    return false
+  }
 }
 
 function handleDefaultDownload(gitTagOrBranch: string, force?: boolean) {
   // handle master->main rename for old consumers
   if (gitTagOrBranch === 'master') {
-    gitTagOrBranch = 'main';
+    gitTagOrBranch = 'main'
   }
 
   const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.d.ts`
