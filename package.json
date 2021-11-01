@@ -5,6 +5,10 @@
 	"author": {
 		"name": "Microsoft Corporation"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/microsoft/vscode-dts.git"
+	},
 	"bin": "index.js",
 	"scripts": {
 		"compile": "tsc -p .",
