@@ -22,12 +22,12 @@ else if (argv._[0]) {
     handleDefaultDownload(argv._[0], argv['f']);
 }
 function handleDev(gitTagOrBranch) {
-    var url = gitTagOrBranch
-        ? "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.proposed.d.ts"
-        : 'https://raw.githubusercontent.com/microsoft/vscode/main/src/vs/vscode.proposed.d.ts';
+    if (gitTagOrBranch === void 0) { gitTagOrBranch = 'main'; }
+    var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.proposed.d.ts";
+    var legacyUrl = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.proposed.d.ts";
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.proposed.d.ts');
     console.log("Downloading vscode.proposed.d.ts\nTo:   " + outPath + "\nFrom: " + url);
-    download(url, outPath).then(function () {
+    download(url, outPath)["catch"](function () { return download(legacyUrl, outPath); }).then(function () {
         if (!isProposedApiEnabled()) {
             console.log("Please set " + toRedString("\"enableProposedApi\": true") + " in package.json.");
         }
@@ -49,10 +49,11 @@ function handleDefaultDownload(gitTagOrBranch, force) {
     if (gitTagOrBranch === 'master') {
         gitTagOrBranch = 'main';
     }
-    var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.d.ts";
+    var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.d.ts";
+    var legacyUrl = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.d.ts";
     var outPath = path_1["default"].resolve(process.cwd(), './vscode.d.ts');
     console.log("Downloading vscode.d.ts\nTo:   " + outPath + "\nFrom: " + url);
-    download(url, outPath).then(function () {
+    download(url, outPath)["catch"](function () { return download(legacyUrl, outPath); }).then(function () {
         if (force) {
             forceRemoveNodeModulesTypes();
         }
@@ -72,7 +73,7 @@ function getHelpMessage() {
         '  - npx vscode-dts <git-tag | git-branch> -f    Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode',
         '  - npx vscode-dts                              Print Help',
         '  - npx vscode-dts -h                           Print Help',
-        '  - npx vscode-dts --help                       Print Help',
+        '  - npx vscode-dts --help                       Print Help'
     ].join(os_1["default"].EOL);
 }
 function download(url, outPath) {

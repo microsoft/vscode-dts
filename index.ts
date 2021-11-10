@@ -18,14 +18,14 @@ if (argv._.length === 0 || argv['h'] || argv['help']) {
   handleDefaultDownload(argv._[0], argv['f'])
 }
 
-function handleDev(gitTagOrBranch?: string) {
-  const url = gitTagOrBranch
-    ? `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.proposed.d.ts`
-    : 'https://raw.githubusercontent.com/microsoft/vscode/main/src/vs/vscode.proposed.d.ts'
+function handleDev(gitTagOrBranch: string = 'main') {
+
+  const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vscode-dts/vscode.proposed.d.ts`
+  const legacyUrl = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.proposed.d.ts`
   const outPath = path.resolve(process.cwd(), './vscode.proposed.d.ts')
   console.log(`Downloading vscode.proposed.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
-  download(url, outPath).then(() => {
+  download(url, outPath).catch(() => download(legacyUrl, outPath)).then(() => {
     if (!isProposedApiEnabled()) {
       console.log(`Please set ${toRedString(`"enableProposedApi": true`)} in package.json.`)
     }
@@ -49,11 +49,12 @@ function handleDefaultDownload(gitTagOrBranch: string, force?: boolean) {
     gitTagOrBranch = 'main'
   }
 
-  const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.d.ts`
+  const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vscode-dts/vscode.d.ts`
+  const legacyUrl = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.d.ts`
   const outPath = path.resolve(process.cwd(), './vscode.d.ts')
   console.log(`Downloading vscode.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
-  download(url, outPath).then(() => {
+  download(url, outPath).catch(() => download(legacyUrl, outPath)).then(() => {
     if (force) {
       forceRemoveNodeModulesTypes()
     } else {
