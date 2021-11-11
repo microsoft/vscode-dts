@@ -16,29 +16,40 @@ if (argv._.length === 0 || argv['h'] || argv['help']) {
     console.log(getHelpMessage());
 }
 else if (argv._[0] === 'dev') {
-    handleDev(argv._[1]);
+    handleDev(argv['g'], argv._.slice(1));
 }
 else if (argv._[0]) {
     handleDefaultDownload(argv._[0], argv['f']);
 }
-function handleDev(gitTagOrBranch) {
+function handleDev(gitTagOrBranch, proposalNames) {
     if (gitTagOrBranch === void 0) { gitTagOrBranch = 'main'; }
-    var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.proposed.d.ts";
-    var legacyUrl = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vs/vscode.proposed.d.ts";
-    var outPath = path_1["default"].resolve(process.cwd(), './vscode.proposed.d.ts');
-    console.log("Downloading vscode.proposed.d.ts\nTo:   " + outPath + "\nFrom: " + url);
-    download(url, outPath)["catch"](function () { return download(legacyUrl, outPath); }).then(function () {
-        if (!isProposedApiEnabled()) {
-            console.log("Please set " + toRedString("\"enableProposedApi\": true") + " in package.json.");
-        }
-        console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api');
-    });
+    if (proposalNames.length === 0) {
+        console.log(getHelpMessage());
+        return;
+    }
+    var _loop_1 = function (name_1) {
+        var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.proposed." + name_1 + ".d.ts";
+        var outPath = path_1["default"].resolve(process.cwd(), "./vscode.proposed." + name_1 + ".d.ts");
+        console.log("Downloading vscode.proposed." + toGreenString(name_1) + ".d.ts\nTo:   " + outPath + "\nFrom: " + url);
+        download(url, outPath).then(function () {
+            if (!isApiProposalEnabled(name_1)) {
+                console.log("Please set " + toRedString("\"enabledApiProposals\": [\"" + name_1 + "\"]") + " in package.json.");
+            }
+            console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api');
+        })["catch"](function (err) {
+            console.error(err);
+        });
+    };
+    for (var _i = 0, proposalNames_1 = proposalNames; _i < proposalNames_1.length; _i++) {
+        var name_1 = proposalNames_1[_i];
+        _loop_1(name_1);
+    }
 }
-function isProposedApiEnabled() {
+function isApiProposalEnabled(name) {
     try {
         var packageJsonPath = path_1["default"].resolve(process.cwd(), './package.json');
         var packageJson = JSON.parse(fs_1["default"].readFileSync(packageJsonPath, 'utf-8'));
-        return !!packageJson.enableProposedApi;
+        return packageJson.enabledApiProposals.includes(name);
     }
     catch (_a) {
         return false;
@@ -64,16 +75,16 @@ function handleDefaultDownload(gitTagOrBranch, force) {
 }
 function getHelpMessage() {
     return [
-        'vscode-dts: CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts',
+        'vscode-dts: CLI utility for downloading vscode.d.ts and vscode.proposed.<proposal>.d.ts',
         '',
         'Usage:',
-        '  - npx vscode-dts dev                          Download vscode.proposed.d.ts',
-        '  - npx vscode-dts dev <git-tag | git-branch>   Download vscode.proposed.d.ts from git tag/branch of microsoft/vscode',
-        '  - npx vscode-dts <git-tag | git-branch>       Download vscode.d.ts from git tag/branch of microsoft/vscode',
-        '  - npx vscode-dts <git-tag | git-branch> -f    Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode',
-        '  - npx vscode-dts                              Print Help',
-        '  - npx vscode-dts -h                           Print Help',
-        '  - npx vscode-dts --help                       Print Help'
+        '  - npx vscode-dts dev <proposal>                            Download vscode.proposed.<proposal>.d.ts files',
+        '  - npx vscode-dts dev <proposal> -g <git-tag | git-branch>  Download vscode.proposed.<proposal>.d.ts files from git tag/branch of microsoft/vscode',
+        '  - npx vscode-dts <git-tag | git-branch>                    Download vscode.d.ts from git tag/branch of microsoft/vscode',
+        '  - npx vscode-dts <git-tag | git-branch> -f                 Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode',
+        '  - npx vscode-dts                                           Print Help',
+        '  - npx vscode-dts -h                                        Print Help',
+        '  - npx vscode-dts --help                                    Print Help'
     ].join(os_1["default"].EOL);
 }
 function download(url, outPath) {
@@ -143,4 +154,7 @@ function removeNodeModulesTypes() {
 }
 function toRedString(s) {
     return "\u001B[31m" + s + "\u001B[0m";
+}
+function toGreenString(s) {
+    return "\u001B[32m" + s + "\u001B[0m";
 }

@@ -13,31 +13,39 @@ const argv = minimist(process.argv.slice(2))
 if (argv._.length === 0 || argv['h'] || argv['help']) {
   console.log(getHelpMessage())
 } else if (argv._[0] === 'dev') {
-  handleDev(argv._[1])
+  handleDev(argv['g'], argv._.slice(1))
 } else if (argv._[0]) {
   handleDefaultDownload(argv._[0], argv['f'])
 }
 
-function handleDev(gitTagOrBranch: string = 'main') {
+function handleDev(gitTagOrBranch: string = 'main', proposalNames: string[]) {
 
-  const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vscode-dts/vscode.proposed.d.ts`
-  const legacyUrl = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vs/vscode.proposed.d.ts`
-  const outPath = path.resolve(process.cwd(), './vscode.proposed.d.ts')
-  console.log(`Downloading vscode.proposed.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
+  if (proposalNames.length === 0) {
+    console.log(getHelpMessage())
+    return;
+  }
 
-  download(url, outPath).catch(() => download(legacyUrl, outPath)).then(() => {
-    if (!isProposedApiEnabled()) {
-      console.log(`Please set ${toRedString(`"enableProposedApi": true`)} in package.json.`)
-    }
-    console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api')
-  })
+  for (const name of proposalNames) {
+    const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vscode-dts/vscode.proposed.${name}.d.ts`
+    const outPath = path.resolve(process.cwd(), `./vscode.proposed.${name}.d.ts`)
+    console.log(`Downloading vscode.proposed.${toGreenString(name)}.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
+
+    download(url, outPath).then(() => {
+      if (!isApiProposalEnabled(name)) {
+        console.log(`Please set ${toRedString(`"enabledApiProposals": ["${name}"]`)} in package.json.`)
+      }
+      console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api')
+    }).catch(err => {
+      console.error(err)
+    })
+  }
 }
 
-function isProposedApiEnabled() {
+function isApiProposalEnabled(name: string) {
   try {
     const packageJsonPath = path.resolve(process.cwd(), './package.json')
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
-    return !!packageJson.enableProposedApi
+    return (<string[]>packageJson.enabledApiProposals).includes(name)
   } catch {
     return false
   }
@@ -65,16 +73,16 @@ function handleDefaultDownload(gitTagOrBranch: string, force?: boolean) {
 
 function getHelpMessage() {
   return [
-    'vscode-dts: CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts',
+    'vscode-dts: CLI utility for downloading vscode.d.ts and vscode.proposed.<proposal>.d.ts',
     '',
     'Usage:',
-    '  - npx vscode-dts dev                          Download vscode.proposed.d.ts',
-    '  - npx vscode-dts dev <git-tag | git-branch>   Download vscode.proposed.d.ts from git tag/branch of microsoft/vscode',
-    '  - npx vscode-dts <git-tag | git-branch>       Download vscode.d.ts from git tag/branch of microsoft/vscode',
-    '  - npx vscode-dts <git-tag | git-branch> -f    Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode',
-    '  - npx vscode-dts                              Print Help',
-    '  - npx vscode-dts -h                           Print Help',
-    '  - npx vscode-dts --help                       Print Help'
+    '  - npx vscode-dts dev <proposal>                            Download vscode.proposed.<proposal>.d.ts files',
+    '  - npx vscode-dts dev <proposal> -g <git-tag | git-branch>  Download vscode.proposed.<proposal>.d.ts files from git tag/branch of microsoft/vscode',
+    '  - npx vscode-dts <git-tag | git-branch>                    Download vscode.d.ts from git tag/branch of microsoft/vscode',
+    '  - npx vscode-dts <git-tag | git-branch> -f                 Download vscode.d.ts and remove conflicting types in node_modules/@types/vscode',
+    '  - npx vscode-dts                                           Print Help',
+    '  - npx vscode-dts -h                                        Print Help',
+    '  - npx vscode-dts --help                                    Print Help'
   ].join(os.EOL)
 }
 
@@ -146,4 +154,8 @@ function removeNodeModulesTypes() {
 
 function toRedString(s: string) {
   return `\x1b[31m${s}\x1b[0m`
+}
+
+function toGreenString(s: string) {
+  return `\x1b[32m${s}\x1b[0m`
 }
