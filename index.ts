@@ -38,12 +38,22 @@ function handleDev(gitTagOrBranch: string = 'main') {
 }
 
 function getEnabledApiProposals(): string[] {
-  try {
-    const packageJsonPath = path.resolve(process.cwd(), './package.json')
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
-    return Array.isArray(packageJson.enabledApiProposals) ? packageJson.enabledApiProposals : []
-  } catch {
-    return []
+  let dir = process.cwd();
+  while (true) {
+    const packageJsonPath = path.resolve(dir, './package.json');
+    try {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+      return Array.isArray(packageJson.enabledApiProposals) ? packageJson.enabledApiProposals : []
+    } catch {
+      // continue
+    }
+
+    const next = path.dirname(dir);
+    if (next === dir) {
+      return [];
+    } else {
+      dir = next;
+    }
   }
 }
 
@@ -83,7 +93,7 @@ function getHelpMessage() {
 }
 
 function download(url, outPath) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     https.get(url, res => {
       if (res.statusCode !== 200) {
         reject(`Failed to get ${url}`)

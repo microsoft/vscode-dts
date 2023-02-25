@@ -38,13 +38,23 @@ function handleDev(gitTagOrBranch) {
     console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api');
 }
 function getEnabledApiProposals() {
-    try {
-        var packageJsonPath = path_1["default"].resolve(process.cwd(), './package.json');
-        var packageJson = JSON.parse(fs_1["default"].readFileSync(packageJsonPath, 'utf-8'));
-        return Array.isArray(packageJson.enabledApiProposals) ? packageJson.enabledApiProposals : [];
-    }
-    catch (_a) {
-        return [];
+    var dir = process.cwd();
+    while (true) {
+        var packageJsonPath = path_1["default"].resolve(dir, './package.json');
+        try {
+            var packageJson = JSON.parse(fs_1["default"].readFileSync(packageJsonPath, 'utf-8'));
+            return Array.isArray(packageJson.enabledApiProposals) ? packageJson.enabledApiProposals : [];
+        }
+        catch (_a) {
+            // continue
+        }
+        var next = path_1["default"].dirname(dir);
+        if (next === dir) {
+            return [];
+        }
+        else {
+            dir = next;
+        }
     }
 }
 function handleDefaultDownload(gitTagOrBranch, force) {
