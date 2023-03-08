@@ -7,6 +7,8 @@ import os from 'os'
 import prompts from 'prompts'
 import minimist from 'minimist'
 import rimraf from 'rimraf'
+import HttpsProxyAgent from 'https-proxy-agent'
+import * as url from "url"
 
 const argv = minimist(process.argv.slice(2))
 
@@ -92,11 +94,19 @@ function getHelpMessage() {
   ].join(os.EOL)
 }
 
-function download(url, outPath) {
+function download(link: string, outPath: string) {
+
   return new Promise<void>((resolve, reject) => {
-    https.get(url, res => {
+
+    const options: https.RequestOptions = url.parse(link);
+
+    if (process.env.HTTPS_PROXY) {
+      options.agent = HttpsProxyAgent(process.env.HTTPS_PROXY);
+    }
+
+    https.get(options, (res) => {
       if (res.statusCode !== 200) {
-        reject(`Failed to get ${url}`)
+        reject(`Failed to get ${link}`)
         return
       }
 
@@ -106,7 +116,7 @@ function download(url, outPath) {
       })
 
       res.pipe(outStream)
-    })
+    });
   })
 }
 
