@@ -3,6 +3,13 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 exports.__esModule = true;
 var https_1 = __importDefault(require("https"));
 var fs_1 = __importDefault(require("fs"));
@@ -11,6 +18,8 @@ var os_1 = __importDefault(require("os"));
 var prompts_1 = __importDefault(require("prompts"));
 var minimist_1 = __importDefault(require("minimist"));
 var rimraf_1 = __importDefault(require("rimraf"));
+var https_proxy_agent_1 = __importDefault(require("https-proxy-agent"));
+var url = __importStar(require("url"));
 var argv = minimist_1["default"](process.argv.slice(2));
 if (argv._.length === 0 || argv['h'] || argv['help']) {
     console.log(getHelpMessage());
@@ -30,10 +39,10 @@ function handleDev(gitTagOrBranch) {
     }
     for (var _i = 0, proposalNames_1 = proposalNames; _i < proposalNames_1.length; _i++) {
         var name_1 = proposalNames_1[_i];
-        var url = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.proposed." + name_1 + ".d.ts";
+        var url_1 = "https://raw.githubusercontent.com/microsoft/vscode/" + gitTagOrBranch + "/src/vscode-dts/vscode.proposed." + name_1 + ".d.ts";
         var outPath = path_1["default"].resolve(process.cwd(), "./vscode.proposed." + name_1 + ".d.ts");
-        console.log("Downloading vscode.proposed." + toGreenString(name_1) + ".d.ts\nTo:   " + outPath + "\nFrom: " + url);
-        download(url, outPath)["catch"](function (err) { return console.error(err); });
+        console.log("Downloading vscode.proposed." + toGreenString(name_1) + ".d.ts\nTo:   " + outPath + "\nFrom: " + url_1);
+        download(url_1, outPath)["catch"](function (err) { return console.error(err); });
     }
     console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api');
 }
@@ -89,11 +98,15 @@ function getHelpMessage() {
         '  - npx vscode-dts --help                       Print Help'
     ].join(os_1["default"].EOL);
 }
-function download(url, outPath) {
+function download(link, outPath) {
     return new Promise(function (resolve, reject) {
-        https_1["default"].get(url, function (res) {
+        var options = url.parse(link);
+        if (process.env.HTTPS_PROXY) {
+            options.agent = https_proxy_agent_1["default"](process.env.HTTPS_PROXY);
+        }
+        https_1["default"].get(options, function (res) {
             if (res.statusCode !== 200) {
-                reject("Failed to get " + url);
+                reject("Failed to get " + link);
                 return;
             }
             var outStream = fs_1["default"].createWriteStream(outPath);
@@ -160,3 +173,4 @@ function toRedString(s) {
 function toGreenString(s) {
     return "\u001B[32m" + s + "\u001B[0m";
 }
+//# sourceMappingURL=index.js.map
