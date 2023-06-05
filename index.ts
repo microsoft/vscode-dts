@@ -6,8 +6,7 @@ import path from 'path'
 import os from 'os'
 import prompts from 'prompts'
 import minimist from 'minimist'
-import rimraf from 'rimraf'
-import HttpsProxyAgent from 'https-proxy-agent'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 import * as url from "url"
 
 const argv = minimist(process.argv.slice(2))
@@ -101,7 +100,7 @@ function download(link: string, outPath: string) {
     const options: https.RequestOptions = url.parse(link);
 
     if (process.env.HTTPS_PROXY) {
-      options.agent = HttpsProxyAgent(process.env.HTTPS_PROXY);
+      options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
     }
 
     https.get(options, (res) => {
@@ -125,7 +124,7 @@ function forceRemoveNodeModulesTypes() {
     fs.unlinkSync('node_modules/vscode/vscode.d.ts')
     console.log('Removed node_modules/vscode/vscode.d.ts')
   } else if (fs.existsSync('node_modules/@types/vscode/index.d.ts')) {
-    rimraf('node_modules/@types/vscode', err => {
+    fs.rm('node_modules/@types/vscode', { force: true, recursive: true }, err => {
       if (err) {
         console.error('Failed to remove node_modules/@types/vscode')
         console.error(err)
@@ -155,7 +154,7 @@ function removeNodeModulesTypes() {
       message: 'Remove conflicting vscode typing at node_modules/@types/vscode?'
     }).then(res => {
       if (res.value) {
-        rimraf('node_modules/@types/vscode', err => {
+        fs.rm('node_modules/@types/vscode', { force: true, recursive: true }, err => {
           if (err) {
             console.error('Failed to remove node_modules/@types/vscode')
             console.error(err)
