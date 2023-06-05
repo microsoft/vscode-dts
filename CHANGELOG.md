@@ -1,3 +1,9 @@
+### 0.4.0 | 2023-06-05
+
+- Rename to `@vscode/dts`
+- Increase minumum require Node.js version to 14
+- Add support for HTTPS_PROXY environment variable
+
 ### 0.3.1 | 2019-09-11
 
 - Improve help message.

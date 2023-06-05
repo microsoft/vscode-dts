@@ -1,6 +1,6 @@
 {
-	"name": "vscode-dts",
-	"version": "0.3.4",
+	"name": "@vscode/dts",
+	"version": "0.4.0",
 	"description": "CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts",
 	"author": {
 		"name": "Microsoft Corporation"
@@ -17,16 +17,15 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"https-proxy-agent": "^5.0.1",
-		"minimist": "^1.2.0",
-		"prompts": "^2.1.0",
-		"rimraf": "^3.0.0"
+		"https-proxy-agent": "^7.0.0",
+		"minimist": "^1.2.8",
+		"prompts": "^2.4.2"
 	},
 	"devDependencies": {
-		"@types/minimist": "^1.2.0",
-		"@types/node": "^12.0.2",
-		"@types/prompts": "^2.0.1",
-		"@types/rimraf": "^2.0.2",
-		"typescript": "^3.6.2"
+		"@types/minimist": "^1.2.2",
+		"@types/node": "^14.0.0",
+		"@types/prompts": "^2.4.4",
+		"@types/rimraf": "^3.0.2",
+		"typescript": "^5.1.3"
 	}
 }

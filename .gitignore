@@ -65,3 +65,4 @@ typings/
 
 #source maps
 *.js.map
+*.js
