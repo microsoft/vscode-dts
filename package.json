@@ -1,6 +1,6 @@
 {
 	"name": "vscode-dts",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"description": "CLI utility for downloading vscode.d.ts and vscode.proposed.d.ts",
 	"author": {
 		"name": "Microsoft Corporation"
