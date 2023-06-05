@@ -24,7 +24,7 @@ extends:
   template: azure-pipelines/npm-package/pipeline.yml@templates
   parameters:
     npmPackages:
-      - name: vsce
+      - name: dts
         buildSteps:
           - script: yarn install --frozen-lockfile
           - script: yarn compile
