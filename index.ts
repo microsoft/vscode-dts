@@ -115,8 +115,11 @@ function download(link: string, outPath: string) {
 
     const options: https.RequestOptions = url.parse(link);
 
-    if (process.env.HTTPS_PROXY) {
-      options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
+    const httpsProxy =
+      process.env.https_proxy || process.env.HTTPS_PROXY || process.env.all_proxy || process.env.ALL_PROXY
+
+    if (httpsProxy) {
+      options.agent = new HttpsProxyAgent(httpsProxy);
     }
 
     https.get(options, (res) => {
