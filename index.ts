@@ -27,12 +27,28 @@ function handleDev(gitTagOrBranch: string = 'main') {
     return;
   }
 
-  for (const name of proposalNames) {
+  for (const info of proposalNames) {
+
+    const idx = info.lastIndexOf('@');
+    const name = idx < 0 ? info : info.slice(0, idx);
+    const version = idx < 0 ? undefined : info.slice(idx + 1);
+
     const url = `https://raw.githubusercontent.com/microsoft/vscode/${gitTagOrBranch}/src/vscode-dts/vscode.proposed.${name}.d.ts`
     const outPath = path.resolve(process.cwd(), `./vscode.proposed.${name}.d.ts`)
     console.log(`Downloading vscode.proposed.${toGreenString(name)}.d.ts\nTo:   ${outPath}\nFrom: ${url}`)
 
-    download(url, outPath).catch(err => console.error(err))
+    download(url, outPath)
+      .then(async () => {
+        if (version) {
+          const src = await fs.promises.readFile(outPath, 'utf-8');
+          const versionRegex = /\/\/\s*version:\s*(\d+)/i;
+          const versionMatch = versionRegex.exec(src)[1];
+          if (versionMatch !== version) {
+            console.log(toRedString(`Version mismatch for ${name}: Latest is ${versionMatch}, the request version ${version} DOES NOT exist.`));
+          }
+        }
+      })
+      .catch(err => console.error(err))
   }
 
   console.log('Read more about proposed API at: https://code.visualstudio.com/api/advanced-topics/using-proposed-api')
