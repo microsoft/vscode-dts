@@ -26,8 +26,8 @@ extends:
     npmPackages:
       - name: dts
         buildSteps:
-          - script: yarn install --frozen-lockfile
-          - script: yarn compile
+          - script: npm ci
+          - script: npm run compile
         testPlatforms: []
 
         publishPackage: ${{ parameters.publishPackage }}
